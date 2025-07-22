@@ -2,13 +2,15 @@ import express, { text } from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import chatRoutes from './routes/chat.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 app.use(express.json());
 app.use(cors());
+
+app.use('/api/chat', chatRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
