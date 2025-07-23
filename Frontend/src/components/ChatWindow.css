@@ -1,0 +1,85 @@
+.chat-window {
+    background-color: #212121;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    border-bottom: #464444 solid 1px;
+    padding-bottom: 8px;
+}
+
+.navbar span{
+    margin-left: 8px;
+    margin-right: 8px;
+    padding: 12px;
+    font-size: 18px;
+    color: #ececec;
+    cursor: pointer;
+    border: transparent;
+    border-radius: 12px;
+}
+
+.navbar span:hover {
+    background-color: #464444;
+}
+
+.usericondiv span{
+    border-radius: 50%;
+}
+
+.chat-input{
+    width: 100%;
+    height: 75px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0px;
+}
+
+.user-input {
+    display: flex;
+    width : 900px;
+    position: relative;
+}
+.user-input input {
+    width: 100%;
+    height: 75px;
+    border-radius: 25px;
+    padding: 0 20px;
+    padding-right: 80px;
+    font-size: 18px;
+    border: none;
+    background-color: #333333;
+    color: #ececec;
+}
+
+.user-input input:focus {
+    outline: none;
+}
+
+#submit {
+    width: 75px;
+    height: 75px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 5px;
+}
+
+#submit i:hover{
+    color: #fff;
+}
