@@ -1,4 +1,4 @@
-import express, { text } from 'express';
+import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import mongoose from 'mongoose';
