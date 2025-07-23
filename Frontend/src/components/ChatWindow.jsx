@@ -3,7 +3,9 @@ import './ChatWindow.css'
 
 const ChatWindow = () => {
   return (
-    <div>ChatWindow</div>
+    <div>
+      ChatWindow
+    </div>
   )
 }
 

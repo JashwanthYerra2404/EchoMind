@@ -1,0 +1,59 @@
+
+.sidebar{
+    background-color: #171717;
+    color: #b4b4b4;
+    width: 320px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.logo {
+    height: 25px;
+    width: 25px;
+    background-color: white;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+button{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 14px;
+    background-color: transparent;
+    border: solid rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+button span {
+    font-size: 20px;
+}
+
+button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.chat-history {
+    list-style: none;
+    padding: 10px;
+    margin: 10px;
+    height: 100%;
+}
+
+.chat-history li {
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 14px;
+    margin-bottom: 0.3rem;
+    border: solid 10px transparent;
+    border-radius: 15px;
+    position: relative;
+}
+
+.chat-history li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
