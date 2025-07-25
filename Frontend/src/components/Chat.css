@@ -1,0 +1,59 @@
+.chats{
+    width : 850px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    scrollbar-color: #555 #333;
+    padding: 20px;
+}
+
+.user-div{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.user-message{
+    background-color: #2f2f2f;
+    color: #ececec;
+    padding:15px 20px;
+    border-radius: 16px;
+    max-width: 70%;
+    text-align: left;
+    font-size: large;
+    line-height: 1.6;
+}
+
+.gpt-div{
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+.gpt-message{
+    color: #ececec;
+    padding: 10px 20px;
+    border-radius: 12px;
+    max-width: 100%;
+    font-size: large;
+    text-align: left;
+    line-height: 1.6;
+}
+
+pre {
+    background-color: #2c2c2c;
+    border-radius: 16px;
+    margin: 12px 0;
+    overflow-x: auto;
+}
+
+code{
+    font-family: 'Fira Code', monospace;
+}
+
+pre code:before {
+    content: attr(class);
+    display: block;
+    margin-bottom: 8px;
+    color: #fff;
+    font-size: 12px;
+  }
