@@ -8,19 +8,6 @@ import { ScaleLoader } from 'react-spinners';
 const ChatWindow = () => {
   const { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, setNewChat } = useContext(Mycontext);
   const [loading, setLoading] = useState(false);
-  const [debouncedValue, setDebouncedValue] = useState(prompt);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPrompt(debouncedValue);
-      // console.log(debouncedValue);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [debouncedValue, setPrompt]);
-
-  const handleInputChange = (e) => {
-    setDebouncedValue(e.target.value);
-  }
 
   const getReply = async () => {
     setLoading(true);
@@ -40,7 +27,7 @@ const ChatWindow = () => {
       const response = await fetch('http://localhost:3000/api/chat', options);
       const res = await response.json();
       // console.log(res.reply);
-      setReply(res.reply);
+      setReply(res.reply); 
     } catch (error) {
       console.error('Error fetching reply:', error);
     }
@@ -77,7 +64,7 @@ const ChatWindow = () => {
       {/* Chat input */}
       <div className="chat-input">
         <div className='user-input'>
-          <input placeholder='Ask anything' type="text" value={debouncedValue} onChange={handleInputChange}
+          <input placeholder='Ask anything' type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' ? getReply() : null}
           />
           <div id='submit' onClick={getReply}><i className="fa-solid fa-paper-plane"></i></div>
