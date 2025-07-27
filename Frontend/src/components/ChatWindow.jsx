@@ -6,11 +6,13 @@ import { useContext, useState, useEffect } from 'react';
 import { ScaleLoader } from 'react-spinners';
 
 const ChatWindow = () => {
-  const { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats } = useContext(Mycontext);
+  const { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, setNewChat } = useContext(Mycontext);
   const [loading, setLoading] = useState(false);
 
   const getReply = async () => {
     setLoading(true);
+    setNewChat(false); 
+
     const options = {
       method: 'POST',
       headers: {
@@ -39,7 +41,7 @@ const ChatWindow = () => {
         { role: 'user', content: prompt },
         { role: 'model', content: reply }
       ]));
-      
+
       setPrompt(""); // Clear input after sending
     }
   }, [reply]);
@@ -67,7 +69,6 @@ const ChatWindow = () => {
           />
           <div id='submit' onClick={getReply}><i className="fa-solid fa-paper-plane"></i></div>
         </div>
-        <p></p>
       </div>
     </div>
   )

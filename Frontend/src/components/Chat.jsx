@@ -7,24 +7,55 @@ import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css'; // Import a highlight.js theme
 
 const Chat = () => {
-  const { newChat, prevChats } = useContext(Mycontext);
-  // const { latestReply, setLatestReply } = useState(null);
+  const { newChat, prevChats, reply } = useContext(Mycontext);
+  const [ latestReply, setLatestReply ] = useState(null);
 
-  // useEffect(() => {}, [prevChats]);
+  useEffect(() => {
+
+    if(!reply || !prevChats?.length){
+      setLatestReply(null); // Reset latest reply if no reply is present
+      return;
+    }
+
+    const content = reply.split(" "); // Split into individual words
+
+    let idx = 0;
+    const interval = setInterval(() => {
+        setLatestReply(content.slice(0, idx+1).join(" "));
+        idx++;
+        if(idx >= content.length) clearInterval(interval);
+    }, 40);
+
+    return () => clearInterval(interval);
+
+  }, [prevChats, reply])
 
   return (
     <>
     { newChat && <h1>Start a new chat</h1>}
     <div className='chats'>
       {
-        prevChats?.map((chat, index) => (
-          <div key={index} className={chat.role === 'user' ? 'user-div' : 'gpt-div'}>
+        prevChats?.slice(0, -1).map((chat, index) => (
+          <div key={`message-${index}`} className={chat.role === 'user' ? 'user-div' : 'gpt-div'}>
             <p className={chat.role === 'user' ? 'user-message' : 'gpt-message'}>
               <Markdown rehypePlugins={[rehypeHighlight]}>{chat.content}</Markdown>
             </p>
           </div>
         ))
       }
+
+      {/* Display latest reply if available */}
+      {prevChats.length > 0 && (
+        <div className="gpt-div">
+          <div className="gpt-message">
+            <Markdown rehypePlugins={[rehypeHighlight]}>
+              {latestReply === null 
+                ? prevChats[prevChats.length - 1].content 
+                : latestReply}
+            </Markdown>
+          </div>
+        </div>
+      )}
 
 
       {/* <div className='user-div'>

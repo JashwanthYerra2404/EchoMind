@@ -42,11 +42,15 @@ button:hover {
     padding: 10px;
     margin: 10px;
     height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #464444 transparent;
 }
 
 .chat-history li {
     cursor: pointer;
     padding: 2px 5px;
+    padding-right: 30px;
     font-size: 14px;
     margin-bottom: 0.3rem;
     border: solid 10px transparent;
@@ -56,4 +60,17 @@ button:hover {
 
 .chat-history li:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-history li i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #b4b4b4;
+    cursor: pointer;
+}
+
+.chat-history li i:hover {
+    color: #ff4d4d;
 }
