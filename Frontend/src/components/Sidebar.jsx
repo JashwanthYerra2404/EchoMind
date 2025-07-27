@@ -102,7 +102,7 @@ const Sidebar = () => {
               delteThread(thread.threadId);
               e.stopPropagation();
               } 
-             } class="fa-solid fa-trash">
+             } className="fa-solid fa-trash">
              </i>
              </li>
           ))

@@ -8,6 +8,19 @@ import { ScaleLoader } from 'react-spinners';
 const ChatWindow = () => {
   const { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, setNewChat } = useContext(Mycontext);
   const [loading, setLoading] = useState(false);
+  const [debouncedValue, setDebouncedValue] = useState(prompt);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPrompt(debouncedValue);
+      // console.log(debouncedValue);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [debouncedValue, setPrompt]);
+
+  const handleInputChange = (e) => {
+    setDebouncedValue(e.target.value);
+  }
 
   const getReply = async () => {
     setLoading(true);
@@ -53,7 +66,7 @@ const ChatWindow = () => {
       <div className='navbar'>
         <span>ECHOMIND <i className="fa-solid fa-angle-down"></i></span>
         <div className="usericondiv">
-          <span><i class="fa-solid fa-user"></i></span>
+          <span><i className="fa-solid fa-user"></i></span>
         </div>
       </div>
 
@@ -64,7 +77,7 @@ const ChatWindow = () => {
       {/* Chat input */}
       <div className="chat-input">
         <div className='user-input'>
-          <input placeholder='Ask anything' type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}
+          <input placeholder='Ask anything' type="text" value={debouncedValue} onChange={handleInputChange}
             onKeyDown={(e) => e.key === 'Enter' ? getReply() : null}
           />
           <div id='submit' onClick={getReply}><i className="fa-solid fa-paper-plane"></i></div>
