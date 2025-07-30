@@ -1,29 +1,53 @@
 import express from "express";
-import Thread from "../models/Thread.js"; 
+import User from "../models/Thread.js"; 
 import getAiResponse from "../utils/Gemini.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 // Test route to create a thread
 router.post("/test", async (req, res) => {
     try{
-        const thread = new Thread({
-            threadId: "xyzabc",
-            title: "Test Thread 2",
+        const curruserId = req.user._id;
+        const curruser = await User.findById(curruserId);
+
+        if (!curruser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        curruser.threads.push({
+            threadId: "jshfuhsf",
+            title: "Test thread 2"
         });
-        const response = await thread.save();
+        // const thread = new Thread({
+        //     threadId: "xyzabc",
+        //     title: "Test Thread 2",
+        // });
+        const response = await curruser.save();
         res.send(response);
     }
     catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Error in test' });
     }
 });
 
 // Route to get all threads
 router.get("/thread", async(req, res) => {
     try{
-        const threads = await Thread.find({}).sort({ updatedAt: -1 });
+        const curruserId = req.user._id;
+        const curruser = await User.findById(curruserId);
+
+        if (!curruser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const threads = [...curruser.threads].sort((a, b) => 
+            new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
+
         res.json(threads);
     }
     catch (error) {
@@ -35,7 +59,13 @@ router.get("/thread", async(req, res) => {
 // Route to get a specific thread by ID
 router.get("/thread/:threadId", async (req, res) => {
     try{
-        const thread = await Thread.findOne({ threadId: req.params.threadId });
+        const curruser = await User.findById(req.user._id);
+        
+        if(!curruser){
+            return res.status(404).json({error : "User not found "});
+        }
+
+        const thread = curruser.threads.find(thread => thread.threadId === req.params.threadId);
         if(!thread){
             return res.status(404).json({ error: 'Thread not found' });
         }
@@ -50,10 +80,21 @@ router.get("/thread/:threadId", async (req, res) => {
 // Route to delete a thread
 router.delete("/thread/:threadId", async (req, res) => {
     try{
-        const deletedthread = await Thread.findOneAndDelete({ threadId: req.params.threadId });
-        if(!deletedthread){
+        const curruser = await User.findById(req.user._id);
+        if(!curruser) {
+            return res.status(404).json({error: "User not found"});
+        }
+
+        const indexToRemove = curruser.threads.findIndex(thread => thread.threadId === req.params.threadId);
+
+        if(indexToRemove === -1){
             return res.status(404).json({ error: 'Thread not found' });
         }
+        
+        curruser.threads.splice(indexToRemove, 1);
+
+        await curruser.save();
+
         res.status(200).json({ success: 'Thread deleted successfully' });
     }
     catch (error){
@@ -71,15 +112,23 @@ router.post("/chat", async (req, res) => {
     }
 
     try {
-        let thread = await Thread.findOne({ threadId: threadId});
+        const curruserId = req.user._id;
+        const curruser = await User.findById(curruserId);
+
+        if (!curruser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        let thread = curruser.threads.find(t => t.threadId === threadId);
 
         if(!thread) {
             // Create a new thread if it doesn't exist
-            thread = new Thread({
+            curruser.threads.push({
                 threadId: threadId,
                 title: message.substring(0, 50),
                 messages: [{role: 'user', content: message}]
             });
+            thread = curruser.threads[curruser.threads.length - 1];
         }
         else {
             // Update existing thread
@@ -92,7 +141,7 @@ router.post("/chat", async (req, res) => {
         thread.messages.push({ role: 'model', content: reply });
         thread.updatedAt = new Date();
 
-        await thread.save();
+        await curruser.save();
         res.json({ reply: reply});
 
     } catch (error) {

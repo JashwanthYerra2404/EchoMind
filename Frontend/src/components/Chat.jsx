@@ -1,4 +1,4 @@
-import React, { use } from 'react'
+import React from 'react'
 import './Chat.css'
 import { Mycontext } from './Mycontext.jsx';
 import { useContext, useState, useEffect } from 'react';
@@ -10,6 +10,7 @@ const Chat = () => {
   const { newChat, prevChats, reply } = useContext(Mycontext);
   const [ latestReply, setLatestReply ] = useState(null);
 
+  // Typing effect for latest reply
   useEffect(() => {
 
     if(!reply || !prevChats?.length){

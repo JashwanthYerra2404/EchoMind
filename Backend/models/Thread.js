@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const messageSchema = new mongoose.Schema({
     role: {
@@ -37,22 +38,40 @@ const threadSchema = new mongoose.Schema({
     }
 });
 
-// const User = mongoose.model('User', new mongoose.Schema({
-//     username: {
-//         type: String,
-//         required: true,
-//         unique: true,
-//     },
-//     email: {
-//         type: String,
-//         required: true,
-//         unique: true,
-//     },
-//     password: {
-//         type: String,
-//         required: true,
-//     },
-//     threads: [threadSchema]
-// }));
+const UserSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    threads: [threadSchema]
+});
 
-export default mongoose.model('Thread', threadSchema);
+UserSchema.pre('save', async function(next) {
+    if(!this.isModified('password')) return next();
+
+    try{
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    }
+    catch (error) {
+        next(error);
+    }
+});
+
+UserSchema.methods.comparePassword = async function(enteredPassword) {
+    const isMatch = await bcrypt.compare(enteredPassword, this.password);
+    return isMatch;
+}
+
+export default mongoose.model('User', UserSchema);
