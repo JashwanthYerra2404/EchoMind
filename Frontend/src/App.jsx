@@ -4,7 +4,10 @@ import ChatWindow from './components/ChatWindow.jsx';
 import { Mycontext } from './components/Mycontext.jsx';
 import { useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
-
+// import { Navigate, Route, Routes } from "react-router-dom";
+// import SignupPage from './components/SignupPage.jsx';
+// import LoginPage from './components/LoginPage.jsx';
+// import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -15,25 +18,19 @@ function App() {
   const [allThreads, setAllThreads] = useState([]);
 
   const providerValues = {
-    prompt: prompt,
-    setPrompt: setPrompt,
-    reply: reply,
-    setReply: setReply,
-    currThreadId: currThreadId,
-    setCurrThreadId: setCurrThreadId,
-    prevChats: prevChats,
-    setPrevChats: setPrevChats,
-    newChat: newChat,
-    setNewChat: setNewChat,
-    allThreads: allThreads,
-    setAllThreads: setAllThreads
+    prompt, setPrompt,
+    reply, setReply,
+    currThreadId, setCurrThreadId,
+    prevChats, setPrevChats,
+    newChat, setNewChat,
+    allThreads, setAllThreads
   };
 
   return (
     <div className='app'>
-      <Mycontext.Provider value = {providerValues}>
-        <Sidebar />
-        <ChatWindow />
+      <Mycontext.Provider value={providerValues}>
+          <Sidebar></Sidebar>
+          <ChatWindow></ChatWindow>
       </Mycontext.Provider>
     </div>
   )

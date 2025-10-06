@@ -38,40 +38,41 @@ const threadSchema = new mongoose.Schema({
     }
 });
 
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    threads: [threadSchema]
-});
+// const UserSchema = new mongoose.Schema({
+//     username: {
+//         type: String,
+//         required: true,
+//         unique: true,
+//     },
+//     email: {
+//         type: String,
+//         required: true,
+//         unique: true,
+//     },
+//     password: {
+//         type: String,
+//         required: true,
+//     },
+//     threads: [threadSchema]
+// });
 
-UserSchema.pre('save', async function(next) {
-    if(!this.isModified('password')) return next();
+// UserSchema.pre('save', async function(next) {
+//     if(!this.isModified('password')) return next();
 
-    try{
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    }
-    catch (error) {
-        next(error);
-    }
-});
+//     try{
+//         const salt = await bcrypt.genSalt(10);
+//         this.password = await bcrypt.hash(this.password, salt);
+//         next();
+//     }
+//     catch (error) {
+//         next(error);
+//     }
+// });
 
-UserSchema.methods.comparePassword = async function(enteredPassword) {
-    const isMatch = await bcrypt.compare(enteredPassword, this.password);
-    return isMatch;
-}
+// UserSchema.methods.comparePassword = async function(enteredPassword) {
+//     const isMatch = await bcrypt.compare(enteredPassword, this.password);
+//     return isMatch;
+// }
 
-export default mongoose.model('User', UserSchema);
+// export default mongoose.model('User', UserSchema);
+export default mongoose.model('Thread', threadSchema);

@@ -1,152 +1,110 @@
 import express from "express";
-import User from "../models/Thread.js"; 
+// import User from "../models/Thread.js"; 
+import Thread from "../models/Thread.js";
 import getAiResponse from "../utils/Gemini.js";
-import { authMiddleware } from "../middlewares/auth.middleware.js";
+// import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 // Test route to create a thread
 router.post("/test", async (req, res) => {
-    try{
-        const curruserId = req.user._id;
-        const curruser = await User.findById(curruserId);
-
-        if (!curruser) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        curruser.threads.push({
-            threadId: "jshfuhsf",
-            title: "Test thread 2"
+    try {
+        const thread = new Thread({
+            threadId: "abc",
+            title: "Testing New Thread2"
         });
-        // const thread = new Thread({
-        //     threadId: "xyzabc",
-        //     title: "Test Thread 2",
-        // });
-        const response = await curruser.save();
+
+        const response = await thread.save();
         res.send(response);
-    }
-    catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error in test' });
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({error: "Failed to save in DB"});
     }
 });
 
 // Route to get all threads
 router.get("/thread", async(req, res) => {
-    try{
-        const curruserId = req.user._id;
-        const curruser = await User.findById(curruserId);
-
-        if (!curruser) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        const threads = [...curruser.threads].sort((a, b) => 
-            new Date(b.updatedAt) - new Date(a.updatedAt)
-        );
-
+    try {
+        const threads = await Thread.find({}).sort({updatedAt: -1});
+        //descending order of updatedAt...most recent data on top
         res.json(threads);
-    }
-    catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({error: "Failed to fetch threads"});
     }
 });
 
 // Route to get a specific thread by ID
-router.get("/thread/:threadId", async (req, res) => {
-    try{
-        const curruser = await User.findById(req.user._id);
-        
-        if(!curruser){
-            return res.status(404).json({error : "User not found "});
+router.get("/thread/:threadId", async(req, res) => {
+    const {threadId} = req.params;
+
+    try {
+        const thread = await Thread.findOne({threadId});
+
+        if(!thread) {
+            res.status(404).json({error: "Thread not found"});
         }
 
-        const thread = curruser.threads.find(thread => thread.threadId === req.params.threadId);
-        if(!thread){
-            return res.status(404).json({ error: 'Thread not found' });
-        }
         res.json(thread.messages);
-    }
-    catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({error: "Failed to fetch chat"});
     }
 });
 
 // Route to delete a thread
 router.delete("/thread/:threadId", async (req, res) => {
-    try{
-        const curruser = await User.findById(req.user._id);
-        if(!curruser) {
-            return res.status(404).json({error: "User not found"});
+    const {threadId} = req.params;
+
+    try {
+        const deletedThread = await Thread.findOneAndDelete({threadId});
+
+        if(!deletedThread) {
+            res.status(404).json({error: "Thread not found"});
         }
 
-        const indexToRemove = curruser.threads.findIndex(thread => thread.threadId === req.params.threadId);
+        res.status(200).json({success : "Thread deleted successfully"});
 
-        if(indexToRemove === -1){
-            return res.status(404).json({ error: 'Thread not found' });
-        }
-        
-        curruser.threads.splice(indexToRemove, 1);
-
-        await curruser.save();
-
-        res.status(200).json({ success: 'Thread deleted successfully' });
-    }
-    catch (error){
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({error: "Failed to delete thread"});
     }
 });
 
 // Route to handle chat messages
-router.post("/chat", async (req, res) => {
-    const { threadId, message } = req.body;
+router.post("/chat", async(req, res) => {
+    const {threadId, message} = req.body;
 
     if(!threadId || !message) {
-        return res.status(400).json({ error: 'Thread ID and message are required' });
+        res.status(400).json({error: "missing required fields"});
     }
 
     try {
-        const curruserId = req.user._id;
-        const curruser = await User.findById(curruserId);
-
-        if (!curruser) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        let thread = curruser.threads.find(t => t.threadId === threadId);
+        let thread = await Thread.findOne({threadId});
 
         if(!thread) {
-            // Create a new thread if it doesn't exist
-            curruser.threads.push({
-                threadId: threadId,
-                title: message.substring(0, 50),
-                messages: [{role: 'user', content: message}]
+            //create a new thread in Db
+            thread = new Thread({
+                threadId,
+                title: message,
+                messages: [{role: "user", content: message}]
             });
-            thread = curruser.threads[curruser.threads.length - 1];
-        }
-        else {
-            // Update existing thread
-            thread.messages.push({ role: 'user', content: message });
-            thread.updatedAt = Date.now();
+        } else {
+            thread.messages.push({role: "user", content: message});
         }
 
-        const reply = await getAiResponse(message);
+        const assistantReply = await getAiResponse(message);
 
-        thread.messages.push({ role: 'model', content: reply });
+        thread.messages.push({role: "model", content: assistantReply});
         thread.updatedAt = new Date();
 
-        await curruser.save();
-        res.json({ reply: reply});
-
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        await thread.save();
+        res.json({reply: assistantReply});
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({error: "something went wrong"});
     }
 });
 

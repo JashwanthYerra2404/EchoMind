@@ -2,20 +2,27 @@ import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
+// import cookieParser from 'cookie-parser';
 
 import chatRoutes from './routes/chat.js';
-import authRoutes from './routes/auth.js';
+// import authRoutes from './routes/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// const corsOptions = {
+//     origin: 'http://localhost:5173', // Allow only your frontend to access
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     credentials: true, // Allow cookies to be sent
+//     optionsSuccessStatus: 204
+//   }
+
 app.use(express.json());
 app.use(cors());
-app.use(cookieParser());
+// app.use(cookieParser());
 
 app.use('/api/chat', chatRoutes);
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

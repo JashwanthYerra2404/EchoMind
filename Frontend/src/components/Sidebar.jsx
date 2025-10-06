@@ -16,7 +16,7 @@ const Sidebar = () => {
       }
     };
     try {
-      const response = await fetch('http://localhost:3000/api/thread', options);
+      const response = await fetch('http://localhost:3000/api/chat/thread', options);
       const res = await response.json();
       const filteredThreads = res.map(thread => ({ threadId: thread.threadId, title: thread.title }));
       // console.log(filteredThreads);
@@ -49,7 +49,7 @@ const Sidebar = () => {
     };
 
     try{
-      const response = await fetch(`http://localhost:3000/api/thread/${newthreadId}`, options);
+      const response = await fetch(`http://localhost:3000/api/chat/thread/${newthreadId}`, options);
       const res = await response.json();
       setPrevChats(res);
       setNewChat(false);
@@ -69,7 +69,7 @@ const Sidebar = () => {
       }
     }
     try{
-      const response = await fetch(`http://localhost:3000/api/thread/${threadId}`, options);
+      const response = await fetch(`http://localhost:3000/api/chat/thread/${threadId}`, options);
       const res = await response.json();
       console.log(res);
       // Remove the deleted thread from the state
